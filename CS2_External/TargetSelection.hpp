@@ -118,9 +118,7 @@ namespace TargetSelection
         std::uintptr_t bestTargetPawn = 0;
         bool foundTarget = false;
 
-        const Vec2 screenCenter(200.f, 200.f);  // Placeholder; actual size from Gui.Window.Size
-        if (200.f > 0.f) // Gui.Window valid
-            *(const_cast<Vec2*>(&screenCenter)) = Vec2(200.f, 200.f);  // Will be set from caller
+        const Vec2 screenCenter(Gui.Window.Size.x * 0.5f, Gui.Window.Size.y * 0.5f);
 
         // ---- STEP 1: Attempt to keep current target ----
         // If current target is still valid, prefer it (sticky targeting)
@@ -138,12 +136,13 @@ namespace TargetSelection
 
             if (currentEntity && VisibilityCheck::IsTargetVisible(*currentEntity, local, aimbotVisibleOnly))
             {
-                if (currentEntity->Pawn.ScreenPos.x > 0.f && currentEntity->Pawn.ScreenPos.y > 0.f)
+                if (std::isfinite(currentEntity->Pawn.ScreenPos.x) && std::isfinite(currentEntity->Pawn.ScreenPos.y))
                 {
                     const float dist = currentEntity->Pawn.ScreenPos.DistanceTo(screenCenter);
                     if (dist <= aimbotFovRadius)
                     {
                         outBestTargetScreen = currentEntity->Pawn.ScreenPos;
+                        g_TargetState.FramesSinceAcquisition++;
                         return true;  // Keep current target
                     }
                 }
