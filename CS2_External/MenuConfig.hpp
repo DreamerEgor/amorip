@@ -42,16 +42,26 @@ namespace MenuConfig
     inline bool ShowWeaponESP = true;
     inline bool ShowDistance = false;
     inline bool ShowPlayerName = true;
-    inline ImColor BoxColor = ImColor(255, 255, 255, 255);
-    inline ImColor BoneColor = ImColor(220, 220, 220, 255);
-    inline ImColor TextColor = ImColor(255, 255, 255, 255);
+    
+    // =========================================================================
+    // Visibility-Aware ESP Colors
+    // =========================================================================
+    // Separate colors for visible vs occluded entities.
+    // Updated immediately when visibility state changes (per-frame).
+    // =========================================================================
+    inline ImColor BoxColor = ImColor(255, 255, 255, 255);              // Visible box
+    inline ImColor OccludedBoxColor = ImColor(100, 100, 100, 180);      // Occluded box (muted)
+    inline ImColor BoneColor = ImColor(220, 220, 220, 255);             // Visible skeleton
+    inline ImColor OccludedBoneColor = ImColor(80, 80, 80, 140);        // Occluded skeleton (very muted)
+    inline ImColor TextColor = ImColor(255, 255, 255, 255);             // Visible text (name/weapon/distance)
+    inline ImColor OccludedTextColor = ImColor(120, 120, 120, 180);     // Occluded text (muted)
 
     inline bool AimBot = true;
     inline Keybind::Bind AimKey{ VK_LBUTTON, Keybind::Mode::Hold };
     inline float AimFov = 4.0f;
     inline float AimSmooth = 11.0f;
     inline int AimPosition = 0; // 0 head, 1 neck, 2 chest
-    inline bool AimSpottedOnly = true;
+    inline bool AimSpottedOnly = true;  // NOTE: Changed to "VisibleOnly" with new system
     inline bool ShowAimFovRange = true;
     inline ImColor AimFovRangeColor = ImColor(255, 255, 255, 190);
 
@@ -102,7 +112,12 @@ namespace MenuConfig
 
         ESP = true; TeamCheck = true; ShowBoxESP = true; ShowBoneESP = true;
         ShowHealthBar = true; ShowWeaponESP = true; ShowDistance = false; ShowPlayerName = true;
-        BoxColor = ImColor(255,255,255,255); BoneColor = ImColor(220,220,220,255); TextColor = ImColor(255,255,255,255);
+        BoxColor = ImColor(255,255,255,255);
+        OccludedBoxColor = ImColor(100,100,100,180);
+        BoneColor = ImColor(220,220,220,255);
+        OccludedBoneColor = ImColor(80,80,80,140);
+        TextColor = ImColor(255,255,255,255);
+        OccludedTextColor = ImColor(120,120,120,180);
 
         AimBot = true; AimKey = { VK_LBUTTON, Keybind::Mode::Hold }; AimFov = 4.f; AimSmooth = 11.f;
         AimPosition = 0; AimSpottedOnly = true; ShowAimFovRange = true; AimFovRangeColor = ImColor(255,255,255,190);

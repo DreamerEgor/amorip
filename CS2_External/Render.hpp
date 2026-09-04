@@ -6,6 +6,7 @@
 #include <cstdio>
 #include "Entity.h"
 #include "MenuConfig.hpp"
+#include "VisibilityCheck.hpp"
 #include "OS-ImGui/OS-ImGui.h"
 
 namespace Render
@@ -45,11 +46,20 @@ namespace Render
         return { Vec2(head.x - width * 0.5f, head.y), Vec2(width, height), true };
     }
 
-    inline void DrawBone(const CEntity& entity)
+    // =========================================================================
+    // Draw Bone with Visibility-Aware Coloring
+    // =========================================================================
+    // Uses actual visibility state from VisibilityCheck, not WorldToScreen success.
+    // Colors update immediately when entity moves behind/out from behind obstacle.
+    // =========================================================================
+    inline void DrawBone(const CEntity& entity, const CEntity& local, bool isVisible)
     {
         const auto& bones = entity.Pawn.BoneData.BonePosList;
         if (bones.size() <= BONEINDEX::ankle_R)
             return;
+
+        // Select color based on actual visibility state, not projection
+        ImColor boneColor = isVisible ? MenuConfig::BoneColor : MenuConfig::OccludedBoneColor;
 
         for (const auto& chain : BoneJointList::List)
         {
@@ -63,7 +73,7 @@ namespace Render
                 if (previous < bones.size() && current < bones.size() &&
                     bones[previous].IsVisible && bones[current].IsVisible &&
                     ValidScreenPoint(bones[previous].ScreenPos) && ValidScreenPoint(bones[current].ScreenPos))
-                    Gui.Line(bones[previous].ScreenPos, bones[current].ScreenPos, MenuConfig::BoneColor, 1.2f);
+                    Gui.Line(bones[previous].ScreenPos, bones[current].ScreenPos, boneColor, 1.2f);
                 previous = current;
             }
         }
@@ -79,6 +89,12 @@ namespace Render
         Gui.RectangleFilled(Vec2(base.x, base.y + box.Size.y - barH), Vec2(3.f, barH), ImColor(120, 220, 120, 255), 1.f);
     }
 
+    // =========================================================================
+    // Draw Player with Visibility-Aware Rendering
+    // =========================================================================
+    // Box and skeleton colors determined by actual visibility check.
+    // Immediately responds to visibility state changes.
+    // =========================================================================
     inline void DrawPlayer(const CEntity& entity, const CEntity& local)
     {
         if (!entity.IsAlive())
@@ -88,21 +104,32 @@ namespace Render
         if (!box.Valid)
             return;
 
+        // ---- CHECK VISIBILITY USING PROPER METHOD ----
+        // This performs the bone-based LOS check, not WorldToScreen
+        const bool isVisible = VisibilityCheck::IsTargetVisible(entity, local, false);
+
+        // ---- SELECT COLORS BASED ON VISIBILITY STATE ----
+        // Separate colors for visible vs occluded (not based on WorldToScreen)
+        ImColor boxColor = isVisible ? MenuConfig::BoxColor : MenuConfig::OccludedBoxColor;
+        ImColor textColor = isVisible ? MenuConfig::TextColor : MenuConfig::OccludedTextColor;
+
         if (MenuConfig::ShowBoxESP)
-            Gui.Rectangle(box.Pos, box.Size, MenuConfig::BoxColor, 1.2f, 0.5f);
+            Gui.Rectangle(box.Pos, box.Size, boxColor, 1.2f, 0.5f);
+        
         if (MenuConfig::ShowBoneESP)
-            DrawBone(entity);
+            DrawBone(entity, local, isVisible);
+        
         if (MenuConfig::ShowHealthBar)
             DrawHealth(box, entity.Pawn.Health);
 
         float topOffset = 15.f;
         if (MenuConfig::ShowPlayerName)
-            Gui.StrokeText(entity.Controller.PlayerName, Vec2(box.Pos.x + box.Size.x * 0.5f, box.Pos.y - topOffset), MenuConfig::TextColor, 13.f, true);
+            Gui.StrokeText(entity.Controller.PlayerName, Vec2(box.Pos.x + box.Size.x * 0.5f, box.Pos.y - topOffset), textColor, 13.f, true);
 
         float bottom = box.Pos.y + box.Size.y + 2.f;
         if (MenuConfig::ShowWeaponESP)
         {
-            Gui.StrokeText(entity.Pawn.WeaponName, Vec2(box.Pos.x + box.Size.x * 0.5f, bottom), MenuConfig::TextColor, 12.f, true);
+            Gui.StrokeText(entity.Pawn.WeaponName, Vec2(box.Pos.x + box.Size.x * 0.5f, bottom), textColor, 12.f, true);
             bottom += 13.f;
         }
         if (MenuConfig::ShowDistance)
@@ -110,7 +137,7 @@ namespace Render
             const float metres = local.Pawn.Pos.DistanceTo(entity.Pawn.Pos) / 100.f;
             char text[32]{};
             sprintf_s(text, "%.0fm", metres);
-            Gui.StrokeText(text, Vec2(box.Pos.x + box.Size.x * 0.5f, bottom), MenuConfig::TextColor, 12.f, true);
+            Gui.StrokeText(text, Vec2(box.Pos.x + box.Size.x * 0.5f, bottom), textColor, 12.f, true);
         }
     }
 
