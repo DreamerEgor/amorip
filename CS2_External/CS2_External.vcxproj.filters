@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files"><UniqueIdentifier>{8F9C86A9-9D93-4621-BB28-00F9035E7730}</UniqueIdentifier></Filter>
+    <Filter Include="Header Files"><UniqueIdentifier>{E51BD6F6-00CC-4B92-9B30-CFE8A61A5820}</UniqueIdentifier></Filter>
+    <Filter Include="OS-ImGui"><UniqueIdentifier>{3FEAFC47-4A19-43B8-95ED-F69300951534}</UniqueIdentifier></Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,35 @@
+Continued changes
+=================
+
+- Changed in-overlay branding/status text to "cs2 external".
+- Status counter now shows overlay FPS plus live CS2 controller ping when m_iPing is available.
+- Added multi-select triggerbot hitboxes: head, neck, chest, stomach, pelvis.
+- Triggerbot hitbox choices are saved/loaded in configs and default.cfg.
+- Hitbox filtering uses the live crosshair target plus projected bone data; with all hitboxes enabled it preserves the original crosshair-target behavior.
+- Existing two-axis RCS, mouse fractional movement, slider/menu focus fix, and uninject/exit button were preserved.
+
+Validation performed in this environment:
+- Checked modified C++ files for balanced delimiters and signature/reference consistency.
+- A full Windows/MSVC build was not possible in this Linux container, so compile/run testing should still be done in Visual Studio on Windows.
+
+RCS FIX PASS
+- Corrected recoil compensation from 1x to CS effective 2x aim-punch scale.
+- Fixed RCS start-bullet activation so the selected bullet is no longer skipped.
+- Removed inaccurate per-weapon multipliers from live punch compensation.
+- Added separate fractional mouse accumulators for aim and RCS to prevent cross-talk.
+- Added MOUSEEVENTF_MOVE_NOCOALESCE for more consistent high-rate relative movement.
+- Added stale/spike protection for invalid punch deltas.
+- Recoil reader now supports either direct m_aimPunchAngle or current AimPunchServices layouts.
+
+STATUS / SPECTATOR / TRIGGER / RCS UI PASS
+- Top-right status defaults to: amor.rip | Admin | fps: <value> | ping: <value>.
+- Status badge font/padding increased slightly.
+- Added a multi-select status-elements dropdown for brand, Admin, FPS, and ping.
+- Spectator list now reads live observer data via controller observer pawn -> observer services -> observer target and shows names currently watching the local pawn.
+- Trigger hitboxes are now a multi-select dropdown with head/neck/chest/stomach/pelvis plus select-all/clear.
+- Trigger no longer bypasses hitbox classification when every hitbox is selected.
+- Trigger edge regions were widened slightly, zero-delay acquisition no longer incurs an extra frame, and lower hitchance retries more responsively.
+- New defaults are 35 ms trigger delay and 100% trigger chance for a more aggressive/semirage-style feel.
+- RCS UI now exposes one slider only: smooth. 1.0 = strongest/full correction; higher values reduce correction.
+- Default menu width increased from 620 to 680 pixels.
+- New settings are persisted in config files.

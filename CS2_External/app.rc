@@ -1,0 +1,3 @@
+#include "resource.h"
+
+IDB_CS2_LOGO BITMAP "assets\\cs2_logo.bmp"
